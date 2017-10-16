@@ -1,16 +1,20 @@
 ## ConquoringConjuration
- Source Not Cleared for release // Source Not Cleared for release //  Source Not Cleared for release
+SOURCE NOT FOR RELASE // EDUCATIONAL ONLY // SOURCE NOT FOR RELEASE
  
-Demo'd on central 9:10PM 10/15 accessible via link below.
-> http://www.wizard101central.com/forums/showthread.php?492500-8-Years-A-Time-Machine-and-a-cup-of-coffee&p=5474406#post5474406
+ 
+Specaial notes for use:
+> 1. You must use this in Visual Studio or any Windows Specific C++ Compiler. This program references Windows default library - meaning that platform neutral IDEs such as Dev C++ will NOT work without extra elbow grease.
+> 2. You must set your Character Type to not set - demonstrated in https://github.com/ChrisFischer-MTA/ConquoringConjuration/blob/master/project_Settings.PNG?raw=true - we are working with Windows specific types, Windows doesn't convert TCHAR_ seemlessly to ASCII/UNICODE/DBCS although it's a loose-type macro. 
 
 
 
 
 Bot written to break Wizard101 Conjuration Concentration
 
+
 Game being played by hand:
 > https://www.youtube.com/watch?v=9gPC6vCNZwk
+
 
 Version/Revision 1:
 
