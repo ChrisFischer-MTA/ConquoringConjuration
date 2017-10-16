@@ -96,6 +96,7 @@ int GetBaseAddress(DWORD processID)
 	cin >> arr;
 	return GetBaseAddress(processID);
 }
+// Function shamelessly adapted from SE.
 void mouse_move(int x, int y) {
 	INPUT Inputs[3] = { 0 };
 
@@ -188,7 +189,7 @@ void findPairs(HANDLE w101) {
 					Sleep(speed+getRandNum(5,10));
 				}
 				if (getRandNum(0, 5) == 1 && errors) {
-					// 8.4% chance of a misclick or random click 
+					// 20.0% chance of a misclick or random click 
 					click(currentColumn, currentRow);
 				}
 			}
