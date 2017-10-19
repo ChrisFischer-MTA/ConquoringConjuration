@@ -24,12 +24,24 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="groovymoves.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="coreclock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wiz101dancebot.cpp">
+    <ClCompile Include="deepshock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="groovymoves.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="coreclock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,0 +1,14 @@
+﻿  deepshock.cpp
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(34): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(42): warning C4101: 'CorrectAddress': unreferenced local variable
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(55): warning C4312: 'type cast': conversion from 'DWORD' to 'void *' of greater size
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(64): warning C4312: 'type cast': conversion from 'DWORD' to 'void *' of greater size
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(65): warning C4312: 'type cast': conversion from 'DWORD' to 'void *' of greater size
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(90): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'int'
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(90): warning C4302: 'type cast': truncation from 'HMODULE' to 'int'
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(174): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.15063.0\ucrt\stdio.h(1272): note: see declaration of 'scanf'
+c:\users\federation\source\repos\conquoringconjuration\wiz101dancebot\deepshock.cpp(223): warning C4996: 'scanf': This function or variable may be unsafe. Consider using scanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.15063.0\ucrt\stdio.h(1272): note: see declaration of 'scanf'
+  wiz101dancebot.vcxproj -> C:\Users\Federation\Source\Repos\ConquoringConjuration\x64\Debug\wiz101dancebot.exe
+  wiz101dancebot.vcxproj -> C:\Users\Federation\Source\Repos\ConquoringConjuration\x64\Debug\wiz101dancebot.pdb (Partial PDB)
