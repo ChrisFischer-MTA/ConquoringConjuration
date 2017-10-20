@@ -5,6 +5,7 @@
 // Copyright 2017. Please do not redistrute or use outside of written authorization.
 
 #include "stdafx.h"
+#include "events.h"
 #include <windows.h>
 #include <tchar.h>
 #include <stdio.h>
@@ -23,19 +24,41 @@ const int roundy[10] = { 2,2,2,0,1,1,1,1,0 };
 bool invert = false;
 // Base Address referes to the base address of the DLL we are referencing.
 int baseAddress = 0;
+
+// Events object to do specific tasks
+events evgen = events::events();
 // CurrentRow, CurrentColumn, CurrentTime, CurrentScore, CurrentLevel, BaseRowColumn
 // Tested/Confirmed that low speed invalidates score. 
 // 75 - Invalidated
+// 90 - Valid?
 // 210 - Valid
+ 
 int speed = 200;
 bool errors = true;
 bool scoreDecision(int score) {
 	// Not used. Planned for stopping in the corrrect tier.
-	return score < 6200;
+	return score < 4000;
 }
 int getRandNum(int lowbound, int highbound) {
 	srand(time(NULL));
 	return lowbound + (rand() % highbound);
+}
+void mouse_move_double(int x, int y) {
+	INPUT Inputs[3] = { 0 };
+
+	Inputs[0].type = INPUT_MOUSE;
+	Inputs[0].mi.dx = x; // desired X coordinate
+	Inputs[0].mi.dy = y; // desired Y coordinate
+	Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+
+	Inputs[1].type = INPUT_MOUSE;
+	Inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+	Inputs[2].type = INPUT_MOUSE;
+	Inputs[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+	SendInput(3, Inputs, sizeof(INPUT));
+	SendInput(3, Inputs, sizeof(INPUT));
 }
 int readNoPointer(HANDLE w101, int offset) {
 	// Access pointer stored at arbitrary location, retrieve current memory address, and retrieve value.
@@ -102,8 +125,11 @@ int GetBaseAddress(DWORD processID)
 	// We know it wasn't found!
 	printf("\n\nFATAL ERROR: Concentration Game not loaded in! To retry, type anything and press enter.");
 	printf("\nPress any key to continue.\n");
-	char arr;
-	cin >> arr;
+	// click up to move past score screen.
+	Sleep(1000);
+	
+	Sleep(1000);
+
 	return GetBaseAddress(processID);
 }
 void mouse_move(int x, int y) {
@@ -238,10 +264,12 @@ void findPairs(HANDLE w101) {
 	GetWindowThreadProcessId(wizard101, &PID);
 	printf("Please enter the speed multiplier (delay): ");
 	scanf("%d", &speed);
-	mouse_move(((65535 / 1920)*(900 + getRandNum(0, 100))), ((65535 / 1080)* (789 + getRandNum(0, 10))));
+	evgen.event_play_continue();
 	Sleep(1000);
 	printf("\n");
 	HANDLE w101 = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE, false, PID);
+	// Counter of games before we execute our anti-afk script
+	int numGamesSinceReset = 0;
 	while (true) {
 		// Is the module still loaded?
 		baseAddress = GetBaseAddress(PID);
@@ -256,10 +284,19 @@ void findPairs(HANDLE w101) {
 					click(i, j);
 				}
 			}
-			Sleep(75000);
-			mouse_move(((65535 / 1920)*(900+getRandNum(0,120))), ((65535 / 1080)* (700+getRandNum(0, 100))));
-			Sleep(4000);
-			mouse_move(((65535 / 1920)*(900 + getRandNum(0, 100))), ((65535 / 1080)* (700 + getRandNum(0, 100))));
+			Sleep(1000);
+			// click the x button
+			evgen.event_game_end();
+			// click the score continue
+			evgen.event_score_continue();
+			evgen.event_play_continue();
+			numGamesSinceReset++;
+			if (numGamesSinceReset == 10) {
+				// Every 200 gold, we reset because of the afk script.
+				evgen.event_game_end();
+				evgen.event_anti_afk();
+				numGamesSinceReset = 0;
+			}
 		}
 		Sleep(500);
 	}
