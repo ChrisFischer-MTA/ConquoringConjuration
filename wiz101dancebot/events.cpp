@@ -80,7 +80,9 @@ void events::event_anti_afk() {
 		printf("Events anti afk called!\n");
 	}
 	// We want to move 8 times.
-	for (int i = 0; i < 8; i++) {
+	// Going to skip this code for right now, this should compile out into nothing.
+	// It seems that this code isn't working as it should be.
+	for (int i = 0; i == 1; i++) {
 		if (events::testing) {
 			printf("Pressed L!\n");
 		}
@@ -96,6 +98,9 @@ void events::event_anti_afk() {
 
 		input.ki.dwFlags = KEYEVENTF_KEYUP;
 		SendInput(1, &input, sizeof(INPUT));
+	}
+	for (int i = 0; i < 10; i++) {
+		events::event_game_end();
 	}
 	Sleep(1000);
 	event_move_x();
@@ -122,14 +127,16 @@ void events::event_move_x() {
 		SendInput(1, &input, sizeof(INPUT));
 	}
 	event_click_conj();
+	Sleep(100);
+	event_click_conj();
 }
 
 void events::event_click_conj() {
 	if (events::testing) {
 		printf("Event Click Conj called!\n");
 	}
-	mouse_move_double(((65535 / 1920)*(1135 + getRandNum(0, 45))), ((65535 / 1080)* (390 + getRandNum(0, 100))));
-	mouse_move_double(((65535 / 1920)*(1135 + getRandNum(0, 45))), ((65535 / 1080)* (390 + getRandNum(0, 100))));
+	mouse_move_double(((65535 / 1920)*(1130 + getRandNum(0, 45))), ((65535 / 1080)* (400 + getRandNum(0, 80))));
+	mouse_move_double(((65535 / 1920)*(1135 + getRandNum(0, 45))), ((65535 / 1080)* (400 + getRandNum(0, 80))));
 }
 
 void events::event_game_start() {

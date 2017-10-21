@@ -15,15 +15,19 @@
 #include <stdlib.h>
 
 
-#define TIER_ONE_SCORE_MIN 4400
+#define TIER_ONE_SCORE_MIN 6200
 #define STD_DELAY 5000
 
 using namespace std;
 
 const int offsets[30] = { (int)(0x00003964), ((int)0x0000266C), 0, (int)0x1F14, (int)0x1EF8, (int)0x9200, };
-const int roundx[10] = {2,1,1,2,1,0,1,0,0,};
-const int roundy[10] = { 2,2,2,0,1,1,1,1,0 };
-bool invert = false;
+
+const int rowOffsetForRound[10] = {2,1,1,2,1,0,1,0,0,};
+const int columnOffsetForRound[10] = { 2,2,2,0,1,1,1,1,0 };
+DWORD ProcessID;
+int numGamesSinceReset = 00;
+bool invertRoundCounter = false;
+
 // Base Address referes to the base address of the DLL we are referencing.
 int baseAddress = 0;
 
@@ -132,6 +136,35 @@ int GetBaseAddress(DWORD processID)
 	Sleep(STD_DELAY);
 	return GetBaseAddress(processID);
 }
+bool isModuleLoadedIn(DWORD processID) {
+	HMODULE hMods[1024];
+	HANDLE hProcess;
+	DWORD cbNeeded;
+	unsigned int i;
+
+	hProcess = OpenProcess(PROCESS_QUERY_INFORMATION |
+		PROCESS_VM_READ,
+		FALSE, processID);
+	if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded))
+	{
+		for (i = 0; i < (cbNeeded / sizeof(HMODULE)); i++)
+		{
+			TCHAR szModName[MAX_PATH];
+
+			if (GetModuleFileNameEx(hProcess, hMods[i], szModName,
+				sizeof(szModName) / sizeof(TCHAR)))
+			{
+				if (_tcscmp(szModName, _T("C:\\ProgramData\\KingsIsle Entertainment\\Wizard101\\Bin\\MG_concentration.dll")) == 0) {
+					//_tprintf(TEXT("\t%s (0x%08X)\n"), szModName, hMods[i]);
+					CloseHandle(hProcess);
+					return true;
+				}
+			}
+		}
+	}
+	CloseHandle(hProcess);
+	return false;
+}
 int getRound(int round) {
 	/*
 	So let's talk about why we need this.
@@ -140,10 +173,10 @@ int getRound(int round) {
 	an assignment operator.*/
 	round--;
 	if (round == 5) {
-		if (invert) {
+		if (invertRoundCounter) {
 			round = 6;
 		}
-		invert = !invert;
+		invertRoundCounter = !invertRoundCounter;
 	}
 	else {
 		if (round > 5) {
@@ -222,8 +255,8 @@ void findPairs(HANDLE w101) {
 		printf("WARNING: Incomplete board detected, please input 0,0 location offsets.\n");
 		int round = readAddress(w101, offsets[4]);
 		round = getRound(round);
-		offrow = roundx[round];
-		offcol = roundy[round];
+		offrow = rowOffsetForRound[round];
+		offcol = columnOffsetForRound[round];
 		printf("Round %d detected. %d %d", round, offrow, offcol);
 	}
 	// Now that we have the board, let's locate our cards (in range)
@@ -270,21 +303,19 @@ void findPairs(HANDLE w101) {
 	int main() {
 	evgen.setTestingTrue();
 	HWND wizard101 = FindWindow(NULL, "Wizard101");
-	DWORD PID;
-	GetWindowThreadProcessId(wizard101, &PID);
+	
+	GetWindowThreadProcessId(wizard101, &ProcessID);
 	printf("Please enter the speed multiplier (delay): ");
 	scanf("%d", &speed);
+	printf("\n");
 	evgen.event_play_continue();
 	Sleep(1000);
-	printf("\n");
-	HANDLE w101 = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE, false, PID);
-	// Counter of games before we execute our anti-afk script
-	int numGamesSinceReset = 00;
+	HANDLE w101 = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE, false, ProcessID);
+
 	while (true) {
 		// Is the module still loaded?
-		baseAddress = GetBaseAddress(PID);
+		baseAddress = GetBaseAddress(ProcessID);
 		printf("Time: d // Row Count: %d // Column Count: %d // Current Level: %d // Current Score: %d // Games since delay: %d\n", readAddress(w101, offsets[0]), readAddress(w101, offsets[1]), readAddress(w101, offsets[4]), readAddress(w101, offsets[3]), numGamesSinceReset);
-		// TODO: CAUSE I KNOW ILL FORGOT I PATCHED THIS FOR TESTING
 		bool keepGoing = scoreDecision(readAddress(w101, offsets[3]));
 		if (keepGoing) {
 			findPairs(w101);
@@ -304,6 +335,10 @@ void findPairs(HANDLE w101) {
 			numGamesSinceReset++;
 			if (numGamesSinceReset >= 10) {
 				// Every 200 gold, we reset because of the afk script.
+				while (isModuleLoadedIn(ProcessID)){
+					// Wizard101 stacks windows when it glitches.
+					evgen.event_game_end();
+				}
 				evgen.event_game_end();
 				evgen.event_anti_afk();
 				evgen.event_anti_afk();
