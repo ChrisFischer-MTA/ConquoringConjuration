@@ -18,6 +18,9 @@ events::~events()
 }
 
 void events::setTestingTrue() {
+	/*
+	This function exists for debugging, should be surpressed if ever put in production.
+	*/
 	events::testing = true;
 }
 
