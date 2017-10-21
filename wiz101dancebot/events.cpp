@@ -96,3 +96,8 @@ void events::event_click_conj() {
 	mouse_move_double(((65535 / 1920)*(1135 + getRandNum(0, 45))), ((65535 / 1080)* (390 + getRandNum(0, 100))));
 	mouse_move_double(((65535 / 1920)*(1135 + getRandNum(0, 45))), ((65535 / 1080)* (390 + getRandNum(0, 100))));
 }
+
+void events::event_game_start() {
+	event_score_continue();
+	event_play_continue();
+}

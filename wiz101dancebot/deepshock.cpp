@@ -126,9 +126,7 @@ int GetBaseAddress(DWORD processID)
 	printf("\n\nFATAL ERROR: Concentration Game not loaded in! To retry, type anything and press enter.");
 	printf("\nPress any key to continue.\n");
 	// click up to move past score screen.
-	Sleep(1000);
-	
-	Sleep(1000);
+	evgen.event_game_end();
 
 	return GetBaseAddress(processID);
 }
@@ -269,7 +267,7 @@ void findPairs(HANDLE w101) {
 	printf("\n");
 	HANDLE w101 = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE, false, PID);
 	// Counter of games before we execute our anti-afk script
-	int numGamesSinceReset = 0;
+	int numGamesSinceReset = 10;
 	while (true) {
 		// Is the module still loaded?
 		baseAddress = GetBaseAddress(PID);
@@ -288,8 +286,7 @@ void findPairs(HANDLE w101) {
 			// click the x button
 			evgen.event_game_end();
 			// click the score continue
-			evgen.event_score_continue();
-			evgen.event_play_continue();
+			evgen.event_game_end();
 			numGamesSinceReset++;
 			if (numGamesSinceReset == 10) {
 				// Every 200 gold, we reset because of the afk script.

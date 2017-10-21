@@ -12,6 +12,7 @@ public:
 	void event_anti_afk();
 	void event_move_x();
 	void event_click_conj();
+	void event_game_start();
 	void event_move_right();
 };
 
