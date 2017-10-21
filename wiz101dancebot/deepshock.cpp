@@ -17,6 +17,9 @@
 
 #define TIER_ONE_SCORE_MIN 6200
 #define STD_DELAY 5000
+#define MAX_COLOUMN 7
+#define MAX_ROW 6
+#define GAMES_BEFORE_RESET 15
 
 using namespace std;
 // CurrentRow, CurrentColumn, CurrentTime, CurrentScore, CurrentLevel, BaseRowColumn
@@ -25,7 +28,7 @@ const int offsets[30] = { (int)(0x00003964), ((int)0x0000266C), 0, (int)0x1F14, 
 const int rowOffsetForRound[10] = {2,1,1,2,1,0,1,0,0,};
 const int columnOffsetForRound[10] = { 2,2,2,0,1,1,1,1,0 };
 DWORD ProcessID;
-int numGamesSinceReset = 00;
+int numGamesSinceReset = 14;
 bool invertRoundCounter = false;
 
 // Base Address referes to the base address of the DLL we are referencing.
@@ -249,7 +252,7 @@ void findPairs(HANDLE w101) {
 	}
 	int offrow = 0;
 	int offcol = 0;
-	if (numCol != 7 || numRow != 6) {
+	if (numCol != MAX_COLOUMN || numRow != MAX_ROW) {
 		// Not a full board drawn.
 		printf("WARNING: Incomplete board detected, please input 0,0 location offsets.\n");
 		int round = readAddress(w101, offsets[4]);
@@ -299,7 +302,7 @@ void findPairs(HANDLE w101) {
 	}
 	Sleep(1500);
 }
-	int main() {
+int main() {
 	evgen.setTestingTrue();
 	HWND wizard101 = FindWindow(NULL, "Wizard101");
 	
@@ -320,8 +323,8 @@ void findPairs(HANDLE w101) {
 			findPairs(w101);
 		}else {
 			// end the game
-			for (int i = 0; i < 7; i++) {
-				for (int j = 0; j < 6; j++) {
+			for (int i = 0; i < MAX_COLOUMN; i++) {
+				for (int j = 0; j < MAX_ROW; j++) {
 					click(i, j);
 				}
 			}
@@ -332,7 +335,7 @@ void findPairs(HANDLE w101) {
 			evgen.event_game_end();
 			Sleep(STD_DELAY / 10);
 			numGamesSinceReset++;
-			if (numGamesSinceReset >= 10) {
+			if (numGamesSinceReset >= GAMES_BEFORE_RESET) {
 				// Every 200 gold, we reset because of the afk script.
 				while (isModuleLoadedIn(ProcessID)){
 					// Wizard101 stacks windows when it glitches.
