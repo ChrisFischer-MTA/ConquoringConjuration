@@ -19,7 +19,7 @@
 #define STD_DELAY 5000
 
 using namespace std;
-
+// CurrentRow, CurrentColumn, CurrentTime, CurrentScore, CurrentLevel, BaseRowColumn
 const int offsets[30] = { (int)(0x00003964), ((int)0x0000266C), 0, (int)0x1F14, (int)0x1EF8, (int)0x9200, };
 
 const int rowOffsetForRound[10] = {2,1,1,2,1,0,1,0,0,};
@@ -33,7 +33,7 @@ int baseAddress = 0;
 
 // Events object to do specific tasks
 events evgen = events::events();
-// CurrentRow, CurrentColumn, CurrentTime, CurrentScore, CurrentLevel, BaseRowColumn
+
 // Tested/Confirmed that low speed invalidates score. 
 // 75 - Invalidated
 // 90 - Valid?
@@ -219,7 +219,6 @@ int retrieveValue(int row, int column, HANDLE w101) {
 	// For every ROW past 0, we add 28 hex (40 dec).
 	// For every COLUMN past 0, we add F0 hex, 240 dec
 	int off = offsets[5] + (row * 40) + (column * 240);
-	//printf("Calculated Offset - %d\n", off);
 	return readNoPointer(w101, off);
 }
 void winRound(HANDLE w101) {
@@ -228,8 +227,8 @@ void winRound(HANDLE w101) {
 	// So, in the first few rounds, we can't accurately predict where to click because (annoyingly) the cards, if not taking up the whole board, aren't in the same place every time.
 	// The solution is to use this function, set the round to win, and send clicks to each and every box until we blindly hit the right one.
 	// Again, I'm not a fan of this either, but we can email KI later with our suggestions on how they write their proprietary code.
-	writeAddress(w101, 0, (DWORD)1);
-	writeAddress(w101, 1, (DWORD)1);
+	writeAddress(w101, offsets[0], (DWORD)1);
+	writeAddress(w101, offsets[1], (DWORD)1);
 }
 void findPairs(HANDLE w101) {
 	// Let's find a bunch of pairs. First, we should set up our int array.
