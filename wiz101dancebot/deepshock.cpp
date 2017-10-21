@@ -15,6 +15,8 @@
 #include <stdlib.h>
 
 
+#define TIER_ONE_SCORE_MIN 4400
+#define STD_DELAY 5000
 
 using namespace std;
 
@@ -36,8 +38,7 @@ events evgen = events::events();
 int speed = 200;
 bool errors = true;
 bool scoreDecision(int score) {
-	// Not used. Planned for stopping in the corrrect tier.
-	return score < 4000;
+	return score < TIER_ONE_SCORE_MIN;
 }
 int getRandNum(int lowbound, int highbound) {
 	srand(time(NULL));
@@ -126,9 +127,30 @@ int GetBaseAddress(DWORD processID)
 	printf("\n\nFATAL ERROR: Concentration Game not loaded in! To retry, type anything and press enter.");
 	printf("\nPress any key to continue.\n");
 	// click up to move past score screen.
-	evgen.event_game_end();
-
+	evgen.event_score_continue();
+	evgen.event_game_start();
+	Sleep(STD_DELAY);
 	return GetBaseAddress(processID);
+}
+int getRound(int round) {
+	/*
+	So let's talk about why we need this.
+	KI's game has a glitch in it's scoring algorithm where it thinks that two levels are the same.
+	From the way the assembly looks, it looks like a programmer hardcoded an offset and failed to use a comparison operator and used -
+	an assignment operator.*/
+	round--;
+	if (round == 5) {
+		if (invert) {
+			round = 6;
+		}
+		invert = !invert;
+	}
+	else {
+		if (round > 5) {
+			round++;
+		}
+	}
+	return round;
 }
 void mouse_move(int x, int y) {
 	INPUT Inputs[3] = { 0 };
@@ -199,18 +221,7 @@ void findPairs(HANDLE w101) {
 		// Not a full board drawn.
 		printf("WARNING: Incomplete board detected, please input 0,0 location offsets.\n");
 		int round = readAddress(w101, offsets[4]);
-		round--;
-		if (round == 5) {
-			if (invert) {
-				round = 6;
-			}
-			invert = !invert;
-		}
-		else {
-			if (round > 5) {
-				round++;
-			}
-		}
+		round = getRound(round);
 		offrow = roundx[round];
 		offcol = roundy[round];
 		printf("Round %d detected. %d %d", round, offrow, offcol);
@@ -257,6 +268,7 @@ void findPairs(HANDLE w101) {
 	Sleep(1500);
 }
 	int main() {
+	evgen.setTestingTrue();
 	HWND wizard101 = FindWindow(NULL, "Wizard101");
 	DWORD PID;
 	GetWindowThreadProcessId(wizard101, &PID);
@@ -267,11 +279,12 @@ void findPairs(HANDLE w101) {
 	printf("\n");
 	HANDLE w101 = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE, false, PID);
 	// Counter of games before we execute our anti-afk script
-	int numGamesSinceReset = 10;
+	int numGamesSinceReset = 00;
 	while (true) {
 		// Is the module still loaded?
 		baseAddress = GetBaseAddress(PID);
-		printf("Time: d // Row Count: %d // Column Count: %d // Current Level: %d // Current Score: %d\n", readAddress(w101, offsets[0]), readAddress(w101, offsets[1]), readAddress(w101, offsets[4]), readAddress(w101, offsets[3]));
+		printf("Time: d // Row Count: %d // Column Count: %d // Current Level: %d // Current Score: %d // Games since delay: %d\n", readAddress(w101, offsets[0]), readAddress(w101, offsets[1]), readAddress(w101, offsets[4]), readAddress(w101, offsets[3]), numGamesSinceReset);
+		// TODO: CAUSE I KNOW ILL FORGOT I PATCHED THIS FOR TESTING
 		bool keepGoing = scoreDecision(readAddress(w101, offsets[3]));
 		if (keepGoing) {
 			findPairs(w101);
@@ -282,15 +295,17 @@ void findPairs(HANDLE w101) {
 					click(i, j);
 				}
 			}
-			Sleep(1000);
+			Sleep(STD_DELAY/5);
 			// click the x button
 			evgen.event_game_end();
-			// click the score continue
+			Sleep(STD_DELAY / 10);
 			evgen.event_game_end();
+			Sleep(STD_DELAY / 10);
 			numGamesSinceReset++;
-			if (numGamesSinceReset == 10) {
+			if (numGamesSinceReset >= 10) {
 				// Every 200 gold, we reset because of the afk script.
 				evgen.event_game_end();
+				evgen.event_anti_afk();
 				evgen.event_anti_afk();
 				numGamesSinceReset = 0;
 			}

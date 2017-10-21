@@ -4,6 +4,7 @@ class events
 public:
 	events();
 	~events();
+	void setTestingTrue();
 	int getRandNum(int lowbound, int highbound);
 	void mouse_move_double(int x, int y);
 	void event_score_continue();
@@ -14,5 +15,7 @@ public:
 	void event_click_conj();
 	void event_game_start();
 	void event_move_right();
+private:
+	bool testing;
 };
 
