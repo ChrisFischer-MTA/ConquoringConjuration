@@ -21,10 +21,10 @@ Process Monitor - Used to find server communication, enumerate the anti-cheat, a
 # Special Thanks
 Shoutout to MSDN for having a function I could just steal.
 
-Thanks for Mr. Singer (Freedom and Valencia, respectively) for providing me the encouragement throughout the project.
+Thanks for Mr. Singer (Freedom) for providing me the encouragement throughout the project.
 
 
-Thanks to Mr. Raymond Enger for accepting it as extra credit work.
+Thanks to Mr. Raymond Enger (Valencia) for accepting it as extra credit work.
 
 
 Bot written to break Wizard101 Conjuration Concentration
