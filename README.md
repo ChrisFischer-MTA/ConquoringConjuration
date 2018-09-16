@@ -27,6 +27,8 @@ Thanks for Mr. Singer (Freedom) for providing me the encouragement throughout th
 Thanks to Mr. Raymond Enger (Valencia) for accepting it as extra credit work.
 
 
+Thanks to Nelson Torres for the moral support. Really couldn't have done it without you reminding me how much of a failure I was.
+
 Bot written to break Wizard101 Conjuration Concentration
 
 
